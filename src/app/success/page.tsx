@@ -15,8 +15,11 @@ export default function SuccessPage() {
   const waText = me ? encodeURIComponent(`🪔 Diwali Spin & Win! I just won ${me.prize?.prizeName || "a Diwali gift"}! 🎉 Spin FREE & win 1g Gold, iPhone 17, Android Phone ₹20K & gift boxes. Play now 👉 ${shareLink}`) : "";
   const progress = me ? Math.min(100, (me.friendsPlayed / me.friendsNeeded) * 100) : 0;
 
-  async function recordShare(channel = "whatsapp") { try { const r = await fetch("/api/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "share", channel }) }); if (r.ok) load(); } catch {} }
-  async function shareWhatsApp() { await recordShare("whatsapp"); window.open(`https://wa.me/?text=${waText}`, "_blank", "noopener"); setMsg("✅ WhatsApp opened! Send it to 2 friends, then tap “Confirm My Order” below."); }
+  const waLink = `https://wa.me/?text=${waText}`;
+  function recordShare(channel = "whatsapp") { fetch("/api/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "share", channel }) }).then(r => { if (r.ok) load(); }).catch(() => {}); }
+  // Record the share in the background (no await) so the tap gesture is kept
+  // and the browser opens WhatsApp with the text intact on mobile.
+  function shareWhatsApp() { recordShare("whatsapp"); setMsg("✅ WhatsApp opened! Send it to 2 friends, then tap “Confirm My Order” below."); }
   async function copyLink() { try { await navigator.clipboard.writeText(shareLink); setCopied(true); setTimeout(() => setCopied(false), 2500); } catch { setMsg(shareLink); } await recordShare("copy"); }
   async function confirmOrder() {
     setConfirming(true);
@@ -63,7 +66,7 @@ export default function SuccessPage() {
         <div className="flex gap-2 mt-1.5"><input readOnly value={shareLink} className="flex-1 min-w-0 bg-[#12002b] border border-white/15 rounded-xl px-3 py-3 text-xs font-mono text-amber-200" onFocus={e => e.target.select()} /><button onClick={copyLink} className="bg-white/10 hover:bg-white/20 font-bold text-sm px-4 rounded-xl whitespace-nowrap">{copied ? "✅ Copied" : "📋 Copy"}</button></div>
         <p className="text-[10px] text-white/35 mt-1">Link contains your user ID: <span className="font-mono">{me.user.id.slice(0, 13)}…</span> • Referral code: {me.user.referralCode} • Shares recorded: {me.user.shareCount}</p>
 
-        <button onClick={shareWhatsApp} className="mt-4 w-full bg-[#25D366] hover:bg-[#1fb857] text-[#052e16] font-black py-4 rounded-2xl text-base shadow-[0_10px_30px_rgba(37,211,102,.35)] transition">💬 Share on WhatsApp →</button>
+        <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={shareWhatsApp} className="mt-4 block text-center w-full bg-[#25D366] hover:bg-[#1fb857] active:bg-[#1fb857] text-[#052e16] font-black py-4 rounded-2xl text-base shadow-[0_10px_30px_rgba(37,211,102,.35)] transition">💬 Share on WhatsApp →</a>
 
         <button onClick={confirmOrder} disabled={confirming} className="mt-3 w-full bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 disabled:opacity-60 text-white font-black py-4 rounded-2xl text-base shadow-lg">{confirming ? "Confirming… 🔒" : me.user.orderConfirmed ? "✅ Order Confirmed — Tap to Re-check Status" : "🎉 Confirm My Order"}</button>
         {msg && <div className="mt-3 bg-emerald-400/10 border border-emerald-300/30 text-emerald-200 text-xs font-semibold rounded-xl px-3 py-2.5">🎉 {msg}</div>}
