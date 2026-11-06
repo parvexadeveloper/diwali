@@ -98,22 +98,22 @@ export default function SpinPage() {
           {/* rotating prize slices */}
           <div className="absolute inset-[8%] transition-transform ease-[cubic-bezier(.12,.8,.16,1)]" style={{ transform: `rotate(${rotation}deg)`, transitionDuration: spinning ? "4500ms" : "300ms" }}>
             <svg viewBox="0 0 400 400" className="w-full h-full overflow-visible">
-              <defs>
-                {PRIZES.map(p => (
-                  <radialGradient key={p.id} id={`slice-${p.id}`} cx={C} cy={C} r={198} gradientUnits="userSpaceOnUse">
-                    <stop offset=".2" stopColor={p.color2} /><stop offset=".7" stopColor={p.color} /><stop offset="1" stopColor={p.color2} />
-                  </radialGradient>
-                ))}
-              </defs>
-              {PRIZES.map((p, i) => (<path key={p.id} d={slicePath(i)} fill={`url(#slice-${p.id})`} stroke="#FDE68A" strokeWidth={3} />))}
-              {PRIZES.map((p, i) => (
-                <g key={p.id} transform={`rotate(${i * SEG} ${C} ${C})`} style={{ fill: p.textColor }}>
-                  <text x={C} y={58} textAnchor="middle" fontSize={34}>{p.emoji}</text>
-                  <text x={C} y={92} textAnchor="middle" fontSize={15} fontWeight={900} letterSpacing=".5">{p.short}</text>
-                  <rect x={C - 48} y={101} width={96} height={22} rx={11} fill="rgba(26,5,51,.55)" stroke="rgba(253,230,138,.7)" strokeWidth={1} />
-                  <text x={C} y={116.5} textAnchor="middle" fontSize={11} fontWeight={800} style={{ fill: "#FDE68A" }}>{t(`prize.${p.id}.value`)}</text>
-                </g>
-              ))}
+              {/* Clean black & white segments with contrasting borders */}
+              {PRIZES.map((p, i) => {
+                const fill = i % 2 ? "#141414" : "#ffffff";
+                const ink = i % 2 ? "#ffffff" : "#141414";
+                return <path key={p.id} d={slicePath(i)} fill={fill} stroke={ink} strokeWidth={2.5} strokeLinejoin="round" />;
+              })}
+              {PRIZES.map((p, i) => {
+                const ink = i % 2 ? "#ffffff" : "#141414";
+                return (
+                  <g key={p.id} transform={`rotate(${i * SEG} ${C} ${C})`} style={{ fill: ink }}>
+                    <text x={C} y={58} textAnchor="middle" fontSize={34}>{p.emoji}</text>
+                    <text x={C} y={92} textAnchor="middle" fontSize={14} fontWeight={900} letterSpacing=".5">{p.short}</text>
+                    <text x={C} y={114} textAnchor="middle" fontSize={11} fontWeight={800}>{t(`prize.${p.id}.value`)}</text>
+                  </g>
+                );
+              })}
             </svg>
           </div>
 
