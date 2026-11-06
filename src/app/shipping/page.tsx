@@ -10,7 +10,7 @@ export default function ShippingPage() {
   const { t } = useI18n();
   const router = useRouter();
   const [entry, setEntry] = useState<{ id: string; prizeId: string; prizeName: string; prizeType: string } | null>(null);
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", addressLine1: "", addressLine2: "", city: "", state: "", postalCode: "", country: "India" });
+  const [form, setForm] = useState({ fullName: "", email: "", phone: "", addressLine1: "", addressLine2: "", city: "Tenkasi", state: "Tamilnadu", postalCode: "123456", country: "India" });
   const [error, setError] = useState(""); const [loading, setLoading] = useState(false); const [checking, setChecking] = useState(true);
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
   const prize = PRIZES.find(p => p.id === entry?.prizeId);
@@ -61,7 +61,7 @@ export default function ShippingPage() {
           {/* <div><label className={labelCls}>{t("ship.addr2")}</label><input className={inputCls} placeholder={t("ship.ph.addr2")} value={form.addressLine2} onChange={e => set("addressLine2", e.target.value)} /></div> */}
           <div className="grid grid-cols-2 gap-3">
             <div><label className={labelCls}>{t("ship.city")}</label><input className={inputCls} placeholder={t("ship.ph.city")} value="Tenkasi" onChange={e => set("city", e.target.value)} required /></div>
-            <div><label className={labelCls}>{t("ship.state")}</label><input className={inputCls} placeholder={t("ship.ph.state")} value={form.state} onChange={e => set("state", e.target.value)} required /></div>
+            <div><label className={labelCls}>{t("ship.state")}</label><input className={inputCls} placeholder={t("ship.ph.state")} value="Tamilnadu" onChange={e => set("state", e.target.value)} required /></div>
           </div>
           <div className="grid grid-cols-2 gap-3 hidden">
             <div><label className={labelCls}>{t("ship.pin")}</label><input className={inputCls} placeholder={t("ship.ph.pin")} inputMode="numeric" maxLength={10} value="627806" onChange={e => set("postalCode", e.target.value)} required /></div>
