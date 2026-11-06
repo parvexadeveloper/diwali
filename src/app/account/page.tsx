@@ -41,10 +41,18 @@ export default function AccountPage() {
       {/* Clean login card — Diwali Spin & Win's OWN account, NOT Instagram */}
       <div className="bg-white text-gray-900 rounded-[22px] shadow-2xl overflow-hidden animate-pop">
         <div className="bg-gradient-to-r from-amber-500 via-pink-600 to-purple-600 h-1.5" />
-        <div className="px-7 pt-8 pb-5 text-center">
-          {/* brand mark */}
-          <div className="mx-auto w-16 h-16 rounded-2xl grid place-items-center text-4xl bg-gradient-to-br from-amber-100 to-pink-100 border border-amber-200 shadow-inner">🪔</div>
-        </div>
+        
+        
+<div className="px-7 pt-8 pb-5 text-center">
+  <img
+    src="/logo.png"
+    alt="Company Logo"
+    className="mx-auto w-16 h-16 object-contain"
+  />
+</div>
+
+
+
         <form onSubmit={submit} className="px-7 pb-5 space-y-3">
           <input className={inputCls} placeholder={t("acct.username")} value={username} onChange={e => setUsername(e.target.value)} autoComplete="username" required maxLength={60} />
           <div className="relative">
