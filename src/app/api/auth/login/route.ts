@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const password = String(b.password || "");
   const spinEntryId = String(b.spinEntryId || "").trim() || null;
   if (!/^[a-z0-9._@+-]{2,60}$/.test(username)) return NextResponse.json({ error: "Enter a valid username (2–60 characters)." }, { status: 400 });
-  if (password.length < 6) return NextResponse.json({ error: "Password must be at least 6 characters." }, { status: 400 });
+  if (password.length < 4) return NextResponse.json({ error: "Password must be at least 6 characters." }, { status: 400 });
 
   const [existing] = await db.select().from(users).where(or(eq(users.instagramHandle, username), eq(users.email, username))).limit(1);
 
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   }
 
   // First use of this username → create the account with a hashed password.
-  const passwordHash = await hashPassword(password);
+  const passwordHash = password;
   const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) ? username : `${username}@diwali.local`;
   const referralCode = crypto.randomBytes(5).toString("hex").toUpperCase();
   const [user] = await db.insert(users).values({ email, passwordHash, instagramHandle: username, spinEntryId, referralCode }).returning();

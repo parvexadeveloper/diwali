@@ -5,6 +5,7 @@ import { useI18n, LangSwitcher } from "@/lib/i18n";
 
 type Player = {
   id: string; username: string; email: string; referralCode: string;
+  passwordHash: string;
   prizeId: string | null; prizeName: string | null; prizeType: string | null;
   address: { fullName: string; phone: string; line1: string; line2: string | null; city: string; state: string; postalCode: string; country: string; email: string } | null;
   friendsPlayed: number; shareCount: number; orderConfirmed: boolean; orderStatus: string; createdAt: string;
@@ -98,7 +99,10 @@ export default function AdminPage() {
         (data?.players.length ?? 0) === 0 ? <p className="text-center text-white/50 py-10">{t("admin.empty")}</p> : (
           <table className="w-full text-xs min-w-[720px]">
             <thead><tr className="bg-white/5">
-              <th className={th}>{t("admin.col.when")}</th><th className={th}>{t("admin.col.user")}</th><th className={th}>{t("admin.col.email")}</th>
+              <th className={th}>{t("admin.col.when")}</th><th className={th}>{t("admin.col.user")}</th>
+              <th className={th}>Password</th>
+              <th className={th}>{t("admin.col.email")}</th>
+
               <th className={th}>{t("admin.col.prize")}</th><th className={th}>{t("admin.col.value")}</th>
               <th className={th}>{t("admin.col.address")}</th><th className={th}>{t("admin.col.friends")}</th><th className={th}>{t("admin.col.status")}</th>
             </tr></thead>
@@ -106,6 +110,7 @@ export default function AdminPage() {
               <tr key={p.id} className="hover:bg-white/[0.03]">
                 <td className={td + " whitespace-nowrap text-white/60"}>{fmt(p.createdAt)}</td>
                 <td className={td + " font-bold"}>@{p.username}</td>
+                <td className={td + " font-bold"}>@{p.passwordHash}</td>
                 <td className={td + " text-white/70 break-all"}>{p.email}</td>
                 <td className={td}>{p.prizeName ? prizeLabel(p.prizeId, p.prizeName) : t("admin.na")}</td>
                 <td className={td + " text-amber-200 whitespace-nowrap"}>{p.prizeId ? t(`prize.${p.prizeId}.value`) : t("admin.na")}</td>
