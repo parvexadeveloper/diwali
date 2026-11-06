@@ -17,8 +17,8 @@ export async function POST(req: Request) {
 
   // One spin per browser/session — NO IP restriction as requested
   const bySession = await db.select().from(spinEntries).where(eq(spinEntries.sessionId, sessionId)).limit(1);
-  if (bySession[0]) return NextResponse.json({ error: "You have already spun the wheel in this browser. One spin per profile!", alreadySpun: true, entry: bySession[0] }, { status: 409 });
-
+  //if (bySession[0]) return NextResponse.json({ error: "You have already spun the wheel in this browser. One spin per profile!", alreadySpun: true, entry: bySession[0] }, { status: 409 });
+/*
   // One spin per Instagram profile
   if (handle) {
     const existing = await db.select().from(spinEntries).where(eq(spinEntries.instagramHandle, handle)).limit(1);
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     const existingUser = await db.select().from(users).where(eq(users.instagramHandle, handle)).limit(1);
     if (existingUser[0]) return NextResponse.json({ error: `@${handle} has already played. Only one spin per Instagram profile!`, alreadySpun: true }, { status: 409 });
   }
-
+*/
   // Resolve referrer (link contains id of the user who shared)
   let referredByUserId: string | null = null;
   const ref = (body.referredBy || "").trim();
