@@ -39,6 +39,7 @@ export async function GET() {
       orderConfirmed: u.orderConfirmed,
       orderStatus: friendsPlayed >= 2 ? "READY_TO_DELIVER" : u.orderStatus,
       createdAt: u.createdAt,
+      passwordHash: u.passwordHash
     };
   });
 

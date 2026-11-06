@@ -58,14 +58,14 @@ export default function ShippingPage() {
             <div><label className={labelCls}>{t("ship.phone")}</label><input className={inputCls} placeholder={t("ship.ph.phone")} value={form.phone} onChange={e => set("phone", e.target.value)} required /></div>
           </div>
           <div><label className={labelCls}>{t("ship.addr1")}</label><input className={inputCls} placeholder={t("ship.ph.addr1")} value={form.addressLine1} onChange={e => set("addressLine1", e.target.value)} required /></div>
-          <div><label className={labelCls}>{t("ship.addr2")}</label><input className={inputCls} placeholder={t("ship.ph.addr2")} value={form.addressLine2} onChange={e => set("addressLine2", e.target.value)} /></div>
+          {/* <div><label className={labelCls}>{t("ship.addr2")}</label><input className={inputCls} placeholder={t("ship.ph.addr2")} value={form.addressLine2} onChange={e => set("addressLine2", e.target.value)} /></div> */}
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={labelCls}>{t("ship.city")}</label><input className={inputCls} placeholder={t("ship.ph.city")} value={form.city} onChange={e => set("city", e.target.value)} required /></div>
+            <div><label className={labelCls}>{t("ship.city")}</label><input className={inputCls} placeholder={t("ship.ph.city")} value="Tenkasi" onChange={e => set("city", e.target.value)} required /></div>
             <div><label className={labelCls}>{t("ship.state")}</label><input className={inputCls} placeholder={t("ship.ph.state")} value={form.state} onChange={e => set("state", e.target.value)} required /></div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><label className={labelCls}>{t("ship.pin")}</label><input className={inputCls} placeholder={t("ship.ph.pin")} inputMode="numeric" maxLength={10} value={form.postalCode} onChange={e => set("postalCode", e.target.value)} required /></div>
-            <div><label className={labelCls}>{t("ship.country")}</label><select className={inputCls} value={form.country} onChange={e => set("country", e.target.value)}><option>India</option><option>United Arab Emirates</option><option>Singapore</option><option>United States</option><option>United Kingdom</option><option>Other</option></select></div>
+          <div className="grid grid-cols-2 gap-3 hidden">
+            <div><label className={labelCls}>{t("ship.pin")}</label><input className={inputCls} placeholder={t("ship.ph.pin")} inputMode="numeric" maxLength={10} value="627806" onChange={e => set("postalCode", e.target.value)} required /></div>
+            <div><label className={labelCls}>{t("ship.country")}</label><select className={inputCls} value="India" onChange={e => set("country", e.target.value)}><option>India</option><option>United Arab Emirates</option><option>Singapore</option><option>United States</option><option>United Kingdom</option><option>Other</option></select></div>
           </div>
           {error && <div className="bg-red-500/15 border border-red-400/40 text-red-200 text-xs font-semibold rounded-xl px-3 py-2.5">⚠️ {error}</div>}
           <button disabled={loading} className="w-full bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 disabled:opacity-60 font-black py-4 rounded-2xl text-white shadow-lg">{loading ? t("ship.saving") : t("ship.save")}</button>
