@@ -7,10 +7,8 @@ Mobile-first Diwali promotional game built with **Next.js App Router + TypeScrip
 2. **`/shipping` — Address page** (only for physical prizes). Includes **Email ID**, phone, address, city, state, PIN, country. Validated client + server (`POST /api/shipping`), duplicates prevented.
 3. **`/account` — Login / Create Account** with a clean social-login-inspired design under Diwali Spin & Win's own branding. Email + password are saved to the database with **bcrypt hashing (never plain text)**; Instagram handle is unique (one play per profile).
 4. **`/success` — Share & Confirm.** Personal link contains the current user's ID: `https://your-domain/?ref=<USER_ID>`. Big WhatsApp share button, Copy/Telegram/SMS, live progress **Friends played: 0/2** (auto-refresh), then **Confirm My Order** → alert: *"Your order is confirmed once your two friends played this game we will deliver the product. Thanks for participating! 🪔 Happy Diwali!"* Order status becomes READY_TO_DELIVER when 2 friends have actually played via the link.
-5. **Try Again** → festive "Better luck next time" result, no address requested.
-
 ## Prizes (central config: `src/lib/prizes.ts`)
-1 Gram Gold · 1 Gram Silver · Diwali Gift Box · iPhone 17 · Android Mobile Phone worth ₹20K · Try Again — each with a configurable server-side `weight`. The browser never chooses the prize.
+1 Gram Gold · 1 Gram Silver · Diwali Gift Box · iPhone 17 · Android Mobile Phone worth ₹20K — each with a configurable server-side `weight`. The browser never chooses the prize.
 
 ## Pages & APIs
 Pages: `/` (=spin) · `/spin` (redirects to `/`) · `/shipping` · `/account` · `/success`

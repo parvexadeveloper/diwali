@@ -58,7 +58,7 @@ export default function SpinPage() {
     } catch { setSpinning(false); setError("Network error. Please check your connection and try again."); }
   }
 
-  const isWin = result && result.type !== "none";
+  const isWin = !!result;
 
   return (<div className="min-h-screen bg-[#1a0533] bg-[radial-gradient(ellipse_at_top,#4c1d95_0%,#2e1065_35%,#1a0533_70%)] overflow-x-hidden">
     <Confetti fire={showResult && !!isWin} />
@@ -138,7 +138,7 @@ export default function SpinPage() {
       {/* prizes grid */}
       <h2 className="text-center font-black text-xl mt-10">🎁 <span className="text-amber-300">Prizes You Can Win</span></h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-3xl mx-auto mt-4">
-        {PRIZES.map(p => (<div key={p.id} className="bg-white/[0.06] border border-white/10 rounded-3xl p-4 text-center hover:border-amber-300/50 transition"><div className="text-4xl">{p.emoji}</div><div className="font-black mt-1.5 text-sm">{p.name}</div><div className="text-[11px] text-amber-200/90 font-bold">{p.value}</div><div className="text-[11px] text-white/50 mt-1">{p.desc}</div><span className={`inline-block mt-2 text-[10px] font-black px-2 py-0.5 rounded-full ${p.type === "none" ? "bg-white/10 text-white/50" : "bg-emerald-400/15 text-emerald-300"}`}>{p.type === "none" ? "TRY AGAIN" : "PHYSICAL GIFT • HOME DELIVERY"}</span></div>))}
+        {PRIZES.map(p => (<div key={p.id} className="bg-white/[0.06] border border-white/10 rounded-3xl p-4 text-center hover:border-amber-300/50 transition"><div className="text-4xl">{p.emoji}</div><div className="font-black mt-1.5 text-sm">{p.name}</div><div className="text-[11px] text-amber-200/90 font-bold">{p.value}</div><div className="text-[11px] text-white/50 mt-1">{p.desc}</div><span className="inline-block mt-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-400/15 text-emerald-300">PHYSICAL GIFT • HOME DELIVERY</span></div>))}
       </div>
 
       {/* how it works */}
@@ -151,7 +151,7 @@ export default function SpinPage() {
         <img src={IMG2} alt="Diyas with marigold flowers Jaipur" className="rounded-3xl h-44 w-full object-cover border border-white/10 hidden sm:block" loading="lazy" />
       </div>
 
-      {stats && stats.recent.length > 0 && (<div className="max-w-3xl mx-auto mt-8"><h3 className="font-black text-center text-sm tracking-wide text-white/80">🏆 RECENT RESULTS</h3><div className="mt-3 flex flex-wrap justify-center gap-2">{stats.recent.map((r, i) => (<span key={i} className={`text-xs font-bold px-3 py-1.5 rounded-full border ${r.prizeType === "none" ? "bg-white/5 border-white/10 text-white/50" : "bg-amber-400/15 border-amber-300/30 text-amber-200"}`}>{r.prizeType === "none" ? "🎆" : "🎉"} {r.handle} — {r.prizeName}</span>))}</div></div>)}
+      {stats && stats.recent.length > 0 && (<div className="max-w-3xl mx-auto mt-8"><h3 className="font-black text-center text-sm tracking-wide text-white/80">🏆 RECENT RESULTS</h3><div className="mt-3 flex flex-wrap justify-center gap-2">{stats.recent.map((r, i) => (<span key={i} className="text-xs font-bold px-3 py-1.5 rounded-full border bg-amber-400/15 border-amber-300/30 text-amber-200">🎉 {r.handle} — {r.prizeName}</span>))}</div></div>)}
     </main>
     <Footer />
 
@@ -159,21 +159,13 @@ export default function SpinPage() {
     {showResult && result && (
       <div className="fixed inset-0 z-[80] bg-black/75 backdrop-blur-sm grid place-items-center px-4" role="dialog" aria-modal>
         <div className="w-full max-w-sm bg-gradient-to-b from-[#2e1065] to-[#1a0533] border border-amber-300/40 rounded-[28px] p-6 text-center animate-pop shadow-2xl">
-          {isWin ? (<>
-            <div className="text-6xl animate-floaty">{result.emoji}</div>
-            <p className="text-amber-300 font-black tracking-widest text-xs mt-2">🎉 CONGRATULATIONS! 🎉</p>
-            <h3 className="text-3xl font-black mt-1">You Won<br />{result.name}!</h3>
-            <p className="text-white/65 text-sm mt-2">{result.desc} • {result.value}</p>
-            <div className="bg-white/[0.07] border border-white/10 rounded-2xl p-3 mt-4 text-xs text-white/60">Next: add your <b className="text-white">delivery address + email</b>, create your account, then share with <b className="text-amber-300">2 friends on WhatsApp</b> to confirm delivery. 🚚</div>
-            <Link href="/shipping" className="block mt-4 bg-gradient-to-r from-amber-400 to-orange-500 text-[#2a0a00] font-black py-3.5 rounded-2xl">📦 Claim &amp; Enter Address →</Link>
-            <button onClick={() => setShowResult(false)} className="mt-2 text-xs text-white/40 underline">View wheel</button>
-          </>) : (<>
-            <div className="text-6xl">🎆</div>
-            <h3 className="text-2xl font-black mt-2">Better Luck Next Time!</h3>
-            <p className="text-white/65 text-sm mt-2">You landed on <b>Try Again</b>. Thank you for celebrating Diwali with us — try again during our next Diwali promotion! 🪔</p>
-            <Link href="/account" className="block mt-4 bg-amber-400 text-[#2a0a00] font-black py-3.5 rounded-2xl">Create Account to Get Notified →</Link>
-            <button onClick={() => setShowResult(false)} className="mt-2 text-xs text-white/40 underline">Close</button>
-          </>)}
+          <div className="text-6xl animate-floaty">{result.emoji}</div>
+          <p className="text-amber-300 font-black tracking-widest text-xs mt-2">🎉 CONGRATULATIONS! 🎉</p>
+          <h3 className="text-3xl font-black mt-1">You Won<br />{result.name}!</h3>
+          <p className="text-white/65 text-sm mt-2">{result.desc} • {result.value}</p>
+          <div className="bg-white/[0.07] border border-white/10 rounded-2xl p-3 mt-4 text-xs text-white/60">Next: add your <b className="text-white">delivery address + email</b>, create your account, then share with <b className="text-amber-300">2 friends on WhatsApp</b> to confirm delivery. 🚚</div>
+          <Link href="/shipping" className="block mt-4 bg-gradient-to-r from-amber-400 to-orange-500 text-[#2a0a00] font-black py-3.5 rounded-2xl">📦 Claim &amp; Enter Address →</Link>
+          <button onClick={() => setShowResult(false)} className="mt-2 text-xs text-white/40 underline">View wheel</button>
           {entry && <p className="text-[10px] text-white/30 mt-3">Entry ID: {entry.id.slice(0, 8)}… • Secured server result • Cannot be changed</p>}
         </div>
       </div>

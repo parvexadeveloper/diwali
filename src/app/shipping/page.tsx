@@ -41,8 +41,6 @@ export default function ShippingPage() {
     <Header /><main className="max-w-xl mx-auto px-4 pb-10"><Steps current={2} />
       {checking ? <p className="text-center text-white/50 py-10">Loading your prize… 🪔</p> : !entry ? (
         <div className="bg-white/[0.07] border border-white/12 rounded-3xl p-6 text-center mt-4"><div className="text-5xl">🎡</div><h1 className="font-black text-xl mt-2">Spin First!</h1><p className="text-sm text-white/60 mt-1">You need to spin the wheel and win a gift before adding a delivery address.</p><Link href="/" className="inline-block mt-4 bg-amber-400 text-[#2a0a00] font-black px-5 py-3 rounded-full text-sm">✨ Go to Spin Page →</Link></div>
-      ) : entry.prizeType === "none" ? (
-        <div className="bg-white/[0.07] border border-white/12 rounded-3xl p-6 text-center mt-4"><div className="text-5xl">🎆</div><h1 className="font-black text-xl mt-2">Better Luck Next Time!</h1><p className="text-sm text-white/60 mt-1">You won <b>Try Again</b>, so no delivery address is needed. Create an account so we can invite you to the next Diwali promotion!</p><Link href="/account" className="inline-block mt-4 bg-amber-400 text-[#2a0a00] font-black px-5 py-3 rounded-full text-sm">Create Account →</Link></div>
       ) : (<>
         <div className="text-center bg-gradient-to-b from-amber-400/20 to-transparent border border-amber-300/30 rounded-3xl p-5 mt-2 animate-pop">
           <div className="text-5xl">{prize?.emoji || "🎁"}</div>

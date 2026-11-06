@@ -1,0 +1,17 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/account/page": "app/account/page.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api/me/route": "app/api/me/route.js",
+  "/api/share/route": "app/api/share/route.js",
+  "/api/shipping/route": "app/api/shipping/route.js",
+  "/api/spin/route": "app/api/spin/route.js",
+  "/api/stats/route": "app/api/stats/route.js",
+  "/page": "app/page.js",
+  "/shipping/page": "app/shipping/page.js",
+  "/spin/page": "app/spin/page.js",
+  "/success/page": "app/success/page.js"
+}
