@@ -1,10 +1,10 @@
-export type Prize = { id: string; name: string; short: string; type: "physical" | "digital" | "none"; emoji: string; color: string; textColor: string; weight: number; value: string; desc: string };
+export type Prize = { id: string; name: string; short: string; type: "physical" | "digital" | "none"; emoji: string; color: string; color2: string; textColor: string; weight: number; value: string; desc: string };
 export const PRIZES: Prize[] = [
-  { id: "gold-1g", name: "1 Gram Gold", short: "1g GOLD", type: "physical", emoji: "🥇", color: "#F59E0B", textColor: "#451a03", weight: 4, value: "₹6,500 approx.", desc: "Certified 1 gram gold coin" },
-  { id: "silver-1g", name: "1 Gram Silver", short: "1g SILVER", type: "physical", emoji: "🥈", color: "#E2E8F0", textColor: "#1e293b", weight: 8, value: "₹110 approx.", desc: "Certified 1 gram silver coin" },
-  { id: "diwali-gift", name: "Diwali Gift Box", short: "GIFT BOX", type: "physical", emoji: "🎁", color: "#7C3AED", textColor: "#ffffff", weight: 18, value: "₹999 hamper", desc: "Sweets, dry fruits & diyas hamper" },
-  { id: "iphone-17", name: "iPhone 17", short: "iPHONE 17", type: "physical", emoji: "📱", color: "#0F766E", textColor: "#ffffff", weight: 4, value: "Grand prize", desc: "Latest iPhone 17 — grand Diwali prize" },
-  { id: "android-20k", name: "Android Phone ₹20K", short: "ANDROID ₹20K", type: "physical", emoji: "🎁", color: "#BE185D", textColor: "#ffffff", weight: 10, value: "Worth ₹20,000", desc: "Android smartphone worth ₹20,000" },
+  { id: "gold-1g", name: "1 Gram Gold", short: "1g GOLD", type: "physical", emoji: "🥇", color: "#FDE68A", color2: "#D97706", textColor: "#451a03", weight: 4, value: "₹6,500 approx.", desc: "Certified 1 gram gold coin" },
+  { id: "silver-1g", name: "1 Gram Silver", short: "1g SILVER", type: "physical", emoji: "🥈", color: "#F8FAFC", color2: "#94A3B8", textColor: "#0f172a", weight: 8, value: "₹110 approx.", desc: "Certified 1 gram silver coin" },
+  { id: "diwali-gift", name: "Diwali Gift Box", short: "GIFT BOX", type: "physical", emoji: "🎁", color: "#C084FC", color2: "#6D28D9", textColor: "#ffffff", weight: 18, value: "₹999 hamper", desc: "Sweets, dry fruits & diyas hamper" },
+  { id: "iphone-17", name: "iPhone 17", short: "iPHONE 17", type: "physical", emoji: "📱", color: "#22D3EE", color2: "#0E7490", textColor: "#ffffff", weight: 4, value: "GRAND PRIZE", desc: "Latest iPhone 17 — grand Diwali prize" },
+  { id: "android-20k", name: "Android Phone ₹20K", short: "ANDROID ₹20K", type: "physical", emoji: "📲", color: "#FB7185", color2: "#BE185D", textColor: "#ffffff", weight: 10, value: "Worth ₹20,000", desc: "Android smartphone worth ₹20,000" },
 ];
 export function pickPrize(): Prize {
   const eligiblePrizes = PRIZES.filter((p) => p.type !== "none");

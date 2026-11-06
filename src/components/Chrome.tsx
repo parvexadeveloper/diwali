@@ -5,18 +5,15 @@ export function Header() {
     <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
       <Link href="/" className="flex items-center gap-2 font-black tracking-tight"><span className="text-2xl animate-flicker">🪔</span><span className="bg-gradient-to-r from-amber-200 via-yellow-400 to-orange-400 bg-clip-text text-transparent">DIWALI SPIN &amp; WIN</span></Link>
       <nav className="flex items-center gap-1 text-xs sm:text-sm font-semibold">
-        <Link href="/" className="px-3 py-1.5 rounded-full hover:bg-white/10">🎡 Spin</Link>
-        <Link href="/account" className="px-3 py-1.5 rounded-full hover:bg-white/10 hidden sm:block">👤 Account</Link>
-        <Link href="/success" className="px-3 py-1.5 rounded-full bg-amber-400 text-[#2a0a00] hover:bg-amber-300">🎁 My Prize</Link>
+        <Link href="/account" className="px-3 py-1.5 rounded-full hover:bg-white/10">👤 Account</Link>
       </nav>
     </div>
-    <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-pink-600 text-[11px] sm:text-xs font-bold text-center py-1 px-3">✨ No IP restriction • One spin per Instagram profile • Server-secured prizes • Share with 2 friends to confirm delivery ✨</div>
   </header>);
 }
 export function Footer() {
   return (<footer className="border-t border-white/10 mt-14"><div className="max-w-6xl mx-auto px-4 py-8 text-center text-xs text-white/50 space-y-2">
     <p className="text-2xl">🪔 ✨ 🎆 ✨ 🪔</p>
-    <p><b className="text-amber-300">Diwali Spin &amp; Win</b> — A festive promotion. This is the promotion&apos;s own account system; we never ask for your Instagram password. Only your public @username is used to enforce one-play-per-profile.</p>
+    <p><b className="text-amber-300">Diwali Spin &amp; Win</b> — A festive promotion. This is the promotion&apos;s own account system; we never ask for your Instagram password.</p>
     <p>Prizes are decided securely on the server and cannot be changed from the browser. Delivery is confirmed after 2 friends play via your personal link.</p>
     <p>Happy Diwali! May your year be filled with light, health &amp; prosperity. 🪔</p>
   </div></footer>);

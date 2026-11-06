@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, spinEntries, shippingAddresses } from "@/db/schema";
+import { users, shippingAddresses } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword, setAuthCookie, rateLimit, clientIp } from "@/lib/auth";
 import { normalizeHandle, validateHandle } from "@/lib/prizes";
@@ -19,13 +19,6 @@ export async function POST(req: Request) {
 
   const byEmail = await db.select().from(users).where(eq(users.email, email)).limit(1);
   if (byEmail[0]) return NextResponse.json({ error: "This email is already registered. Please sign in." }, { status: 409 });
-  const byHandle = await db.select().from(users).where(eq(users.instagramHandle, handle)).limit(1);
-  if (byHandle[0]) return NextResponse.json({ error: `@${handle} has already played. One entry per Instagram profile!` }, { status: 409 });
-  if (spinEntryId) {
-    const spun = await db.select().from(spinEntries).where(eq(spinEntries.instagramHandle, handle)).limit(1);
-    // handle on spin and account must match if spin used a handle
-    if (spun[0] && spun[0].id !== spinEntryId) return NextResponse.json({ error: "This Instagram profile already has a spin entry." }, { status: 409 });
-  }
   const passwordHash = await hashPassword(password);
   const referralCode = crypto.randomBytes(5).toString("hex").toUpperCase();
   const [user] = await db.insert(users).values({ email, passwordHash, instagramHandle: handle, spinEntryId, referralCode }).returning();

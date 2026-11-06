@@ -1,32 +1,17 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { spinEntries, users } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { pickPrize, normalizeHandle, validateHandle } from "@/lib/prizes";
-import { getOrReadSessionId, rateLimit, clientIp } from "@/lib/auth";
+import { eq, desc } from "drizzle-orm";
+import { pickPrize } from "@/lib/prizes";
+import { getOrReadSessionId } from "@/lib/auth";
 
+// Unlimited spins: no IP rate limit, no per-session limit, no per-Instagram-profile limit.
 export async function POST(req: Request) {
-  if (!rateLimit(`spin:${clientIp(req)}`, 12, 60_000)) return NextResponse.json({ error: "Too many attempts. Please wait a minute." }, { status: 429 });
-  let body: { instagramHandle?: string; referredBy?: string } = {};
+  let body: { referredBy?: string } = {};
   try { body = await req.json(); } catch {}
-  const handleRaw = (body.instagramHandle || "").trim();
-  const handle = handleRaw ? normalizeHandle(handleRaw) : "";
-  if (handle && !validateHandle(handle)) return NextResponse.json({ error: "Enter a valid Instagram username (letters, numbers, . or _ , 2–30 chars)." }, { status: 400 });
 
   const { sessionId, shouldSet } = await getOrReadSessionId(req);
 
-  // One spin per browser/session — NO IP restriction as requested
-  const bySession = await db.select().from(spinEntries).where(eq(spinEntries.sessionId, sessionId)).limit(1);
-  //if (bySession[0]) return NextResponse.json({ error: "You have already spun the wheel in this browser. One spin per profile!", alreadySpun: true, entry: bySession[0] }, { status: 409 });
-/*
-  // One spin per Instagram profile
-  if (handle) {
-    const existing = await db.select().from(spinEntries).where(eq(spinEntries.instagramHandle, handle)).limit(1);
-    if (existing[0]) return NextResponse.json({ error: `@${handle} has already played. Only one spin per Instagram profile!`, alreadySpun: true }, { status: 409 });
-    const existingUser = await db.select().from(users).where(eq(users.instagramHandle, handle)).limit(1);
-    if (existingUser[0]) return NextResponse.json({ error: `@${handle} has already played. Only one spin per Instagram profile!`, alreadySpun: true }, { status: 409 });
-  }
-*/
   // Resolve referrer (link contains id of the user who shared)
   let referredByUserId: string | null = null;
   const ref = (body.referredBy || "").trim();
@@ -40,7 +25,7 @@ export async function POST(req: Request) {
 
   const prize = pickPrize(); // SERVER-SIDE ONLY — never trust client
   const [entry] = await db.insert(spinEntries).values({
-    sessionId, instagramHandle: handle || null, referredByUserId, prizeId: prize.id, prizeName: prize.name, prizeType: prize.type,
+    sessionId, instagramHandle: null, referredByUserId, prizeId: prize.id, prizeName: prize.name, prizeType: prize.type,
   }).returning();
 
   const res = NextResponse.json({ success: true, entry: { id: entry.id, prizeId: entry.prizeId, prizeName: entry.prizeName, prizeType: entry.prizeType, createdAt: entry.createdAt }, prize });
@@ -52,6 +37,6 @@ export async function GET(req: Request) {
   const { sessionId } = await getOrReadSessionId(req);
   const url = new URL(req.url); const sid = url.searchParams.get("sessionId");
   const target = sid || sessionId;
-  const rows = await db.select().from(spinEntries).where(eq(spinEntries.sessionId, target)).limit(1);
+  const rows = await db.select().from(spinEntries).where(eq(spinEntries.sessionId, target)).orderBy(desc(spinEntries.createdAt)).limit(1);
   return NextResponse.json({ entry: rows[0] || null });
 }

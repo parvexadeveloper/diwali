@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PRIZES } from "@/lib/prizes";
 import { Header, Footer, Confetti, Steps } from "@/components/Chrome";
@@ -8,51 +8,46 @@ type Entry = { id: string; prizeId: string; prizeName: string; prizeType: string
 const IMG1 = "https://images.pexels.com/photos/3135229/pexels-photo-3135229.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200";
 const IMG2 = "https://images.pexels.com/photos/4078516/pexels-photo-4078516.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200";
 
+// Wheel geometry (SVG viewBox 0 0 400 400). Slice i is centred at i*SEG degrees, clockwise from the top pointer.
+const SEG = 360 / PRIZES.length;
+const C = 200;
+const pt = (deg: number, r: number) => { const a = (deg * Math.PI) / 180; return [C + r * Math.sin(a), C - r * Math.cos(a)]; };
+function slicePath(i: number, r = 198) {
+  const [x1, y1] = pt(i * SEG - SEG / 2, r); const [x2, y2] = pt(i * SEG + SEG / 2, r);
+  return `M${C},${C} L${x1},${y1} A${r},${r} 0 ${SEG > 180 ? 1 : 0} 1 ${x2},${y2} Z`;
+}
+const BULBS = Array.from({ length: PRIZES.length * 4 }, (_, i) => pt((i * 360) / (PRIZES.length * 4), 191));
+
 export default function SpinPage() {
-  const [handle, setHandle] = useState("");
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [result, setResult] = useState<(typeof PRIZES)[number] | null>(null);
   const [entry, setEntry] = useState<Entry | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [error, setError] = useState("");
-  const [prevEntry, setPrevEntry] = useState<Entry | null>(null);
   const [stats, setStats] = useState<{ totalSpins: number; winners: number; players: number; orders: number; recent: { prizeName: string; handle: string; prizeType: string }[] } | null>(null);
   const [refBy, setRefBy] = useState("");
-  const wheelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const ref = q.get("ref") || q.get("referral") || "";
     if (ref) { localStorage.setItem("diwali_ref", ref); setRefBy(ref); } else setRefBy(localStorage.getItem("diwali_ref") || "");
-    const savedHandle = localStorage.getItem("diwali_handle"); if (savedHandle) setHandle(savedHandle);
-    try { const e = JSON.parse(localStorage.getItem("diwali_entry") || "null"); if (e?.id) setPrevEntry(e); } catch {}
     fetch("/api/stats").then(r => r.json()).then(setStats).catch(() => {});
   }, []);
 
-  const conic = useMemo(() => `conic-gradient(from -30deg, ${PRIZES.map((p, i) => `${p.color} ${i * 60}deg ${(i + 1) * 60}deg`).join(", ")})`, []);
-
   async function spin() {
+    if (spinning) return;
     setError("");
-    const h = handle.trim().replace(/^@/, "");
-    if (h && !/^[a-zA-Z0-9._]{2,30}$/.test(h)) { setError("Enter a valid Instagram username (2–30 chars: letters, numbers, . or _) or leave it blank to play as guest."); return; }
     setSpinning(true); setShowResult(false); setResult(null);
     try {
-      const res = await fetch("/api/spin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ instagramHandle: h, referredBy: refBy }) });
+      const res = await fetch("/api/spin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ referredBy: refBy }) });
       const data = await res.json();
-      if (!res.ok) {
-        setSpinning(false);
-        if (data.entry) { localStorage.setItem("diwali_entry", JSON.stringify(data.entry)); setPrevEntry(data.entry); }
-        setError(data.error || "Something went wrong. Please try again.");
-        return;
-      }
+      if (!res.ok) { setSpinning(false); setError(data.error || "Something went wrong. Please try again."); return; }
       const prize = PRIZES.find(p => p.id === data.entry.prizeId) || data.prize;
       const idx = PRIZES.findIndex(p => p.id === prize.id);
-      const jitter = Math.floor(Math.random() * 36) - 18;
-      const targetCenter = idx * 60 + 30;
-      setRotation(prev => { const base = Math.ceil(prev / 360) * 360; return base + 360 * 6 + (360 - targetCenter) + jitter; });
+      const jitter = (Math.random() - 0.5) * SEG * 0.6;
+      setRotation(prev => { const base = Math.ceil(prev / 360) * 360; return base + 360 * 6 + ((360 - idx * SEG) % 360) + jitter; });
       localStorage.setItem("diwali_entry", JSON.stringify(data.entry));
-      if (h) localStorage.setItem("diwali_handle", h);
       setEntry(data.entry); setResult(prize);
       setTimeout(() => { setSpinning(false); setShowResult(true); fetch("/api/stats").then(r => r.json()).then(setStats).catch(() => {}); }, 4600);
     } catch { setSpinning(false); setError("Network error. Please check your connection and try again."); }
@@ -82,68 +77,74 @@ export default function SpinPage() {
         ))}
       </div>
 
-      {prevEntry && !result && (
-        <div className="max-w-xl mx-auto mt-5 bg-amber-400/10 border border-amber-300/40 rounded-3xl p-4 text-center animate-pop">
-          <p className="text-2xl">{prevEntry.prizeType === "none" ? "🎆" : "🎉"}</p>
-          <p className="font-black text-amber-200">You already spun: {prevEntry.prizeName}</p>
-          <p className="text-xs text-white/60 mt-1">One spin per Instagram profile / browser. Continue your journey below:</p>
-          <div className="flex gap-2 justify-center mt-3 flex-wrap">
-            {prevEntry.prizeType !== "none" ? (<><Link href="/shipping" className="bg-amber-400 text-[#2a0a00] font-black text-sm px-4 py-2.5 rounded-full">📦 Enter Delivery Address →</Link><Link href="/success" className="bg-white/10 font-bold text-sm px-4 py-2.5 rounded-full">🎁 My Prize</Link></>) : (<Link href="/account" className="bg-amber-400 text-[#2a0a00] font-black text-sm px-4 py-2.5 rounded-full">Create Account →</Link>)}
-            <button onClick={() => { localStorage.removeItem("diwali_entry"); setPrevEntry(null); }} className="text-xs text-white/40 underline px-2">Not you? Reset this browser</button>
-          </div>
-        </div>
-      )}
-
       {/* WHEEL */}
       <section className="relative max-w-md mx-auto mt-7">
-        <div className="absolute -inset-3 bg-gradient-to-r from-amber-500/30 via-pink-500/20 to-purple-500/30 rounded-full blur-2xl" aria-hidden />
-        <div className="relative">
-          {/* pointer */}
-          <div className="absolute left-1/2 -translate-x-1/2 -top-2 z-20 flex flex-col items-center"><div className="text-3xl drop-shadow">🔻</div></div>
-          <div ref={wheelRef} className="wheel-shadow relative aspect-square rounded-full border-[10px] border-amber-400/90 overflow-hidden transition-transform ease-[cubic-bezier(.12,.8,.16,1)]" style={{ background: conic, transform: `rotate(${rotation}deg)`, transitionDuration: spinning ? "4500ms" : "300ms" }}>
-            {PRIZES.map((p, i) => (
-              <div key={p.id} className="absolute inset-0 flex justify-center" style={{ transform: `rotate(${i * 60 + 30}deg)` }}>
-                <div className="pt-[9%] text-center w-24" style={{ color: p.textColor }}>
-                  <div className="text-xl sm:text-2xl leading-none">{p.emoji}</div>
-                  <div className="font-black text-[10px] sm:text-[11px] leading-tight mt-1 tracking-wide px-1">{p.short}</div>
-                  <div className="text-[8px] font-bold opacity-80">{p.value}</div>
-                </div>
-              </div>
-            ))}
-            {/* hub */}
-            <div className="absolute inset-0 grid place-items-center"><div className="w-[26%] aspect-square rounded-full bg-[#2a0a4a] border-4 border-amber-300 grid place-items-center text-center shadow-2xl"><div><div className="text-xl sm:text-2xl">🪔</div><div className="text-[8px] sm:text-[9px] font-black text-amber-300 tracking-widest leading-tight">SPIN<br />&amp; WIN</div></div></div></div>
-            {/* segment separators */}
-            {PRIZES.map((_, i) => (<div key={i} className="absolute left-1/2 top-1/2 w-[2px] h-[50%] bg-[#1a0533]/25 origin-top" style={{ transform: `rotate(${i * 60}deg) translateX(-50%)` }} aria-hidden />))}
+        <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/40 via-pink-500/30 to-purple-500/40 rounded-full blur-2xl" aria-hidden />
+        <div className="relative aspect-square wheel-shadow">
+          {/* static golden rim with blinking bulbs */}
+          <svg viewBox="0 0 400 400" className="absolute inset-0 w-full h-full" aria-hidden>
+            <defs>
+              <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FEF3C7" /><stop offset=".35" stopColor="#F59E0B" /><stop offset=".65" stopColor="#B45309" /><stop offset="1" stopColor="#FDE68A" /></linearGradient>
+            </defs>
+            <circle cx={C} cy={C} r={199} fill="url(#rim)" />
+            <circle cx={C} cy={C} r={184} fill="#2a0a4a" />
+            {BULBS.map(([x, y], i) => (<circle key={i} cx={x} cy={y} r={4.2} fill={i % 2 ? "#FFF7ED" : "#FDE047"} className={`bulb ${i % 2 ? "bulb-alt" : ""} ${spinning ? "bulb-fast" : ""}`} />))}
+          </svg>
+
+          {/* rotating prize slices */}
+          <div className="absolute inset-[8%] transition-transform ease-[cubic-bezier(.12,.8,.16,1)]" style={{ transform: `rotate(${rotation}deg)`, transitionDuration: spinning ? "4500ms" : "300ms" }}>
+            <svg viewBox="0 0 400 400" className="w-full h-full overflow-visible">
+              <defs>
+                {PRIZES.map(p => (
+                  <radialGradient key={p.id} id={`slice-${p.id}`} cx={C} cy={C} r={198} gradientUnits="userSpaceOnUse">
+                    <stop offset=".2" stopColor={p.color2} /><stop offset=".7" stopColor={p.color} /><stop offset="1" stopColor={p.color2} />
+                  </radialGradient>
+                ))}
+              </defs>
+              {PRIZES.map((p, i) => (<path key={p.id} d={slicePath(i)} fill={`url(#slice-${p.id})`} stroke="#FDE68A" strokeWidth={3} />))}
+              {PRIZES.map((p, i) => (
+                <g key={p.id} transform={`rotate(${i * SEG} ${C} ${C})`} style={{ fill: p.textColor }}>
+                  <text x={C} y={58} textAnchor="middle" fontSize={34}>{p.emoji}</text>
+                  <text x={C} y={92} textAnchor="middle" fontSize={15} fontWeight={900} letterSpacing=".5">{p.short}</text>
+                  <rect x={C - 48} y={101} width={96} height={22} rx={11} fill="rgba(26,5,51,.55)" stroke="rgba(253,230,138,.7)" strokeWidth={1} />
+                  <text x={C} y={116.5} textAnchor="middle" fontSize={11} fontWeight={800} style={{ fill: "#FDE68A" }}>{p.value}</text>
+                </g>
+              ))}
+            </svg>
           </div>
-          <div className="absolute inset-0 rounded-full border border-white/20 pointer-events-none" aria-hidden />
+
+          {/* hub = spin button */}
+          <button onClick={spin} disabled={spinning} aria-label="Spin the wheel" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[24%] aspect-square rounded-full bg-[radial-gradient(circle_at_35%_30%,#FEF3C7,#F59E0B_45%,#92400E)] border-4 border-[#FFF7ED] shadow-[0_0_0_6px_rgba(42,10,74,.9),0_10px_30px_rgba(0,0,0,.6)] grid place-items-center text-[#3b0a00] font-black hover:scale-105 active:scale-95 disabled:hover:scale-100 transition">
+            <span className="leading-none text-center"><span className="block text-xl sm:text-2xl">🪔</span><span className="block text-[11px] sm:text-sm tracking-widest">{spinning ? "…" : "SPIN"}</span></span>
+          </button>
+
+          {/* pointer */}
+          <svg viewBox="0 0 40 52" className="absolute left-1/2 -translate-x-1/2 -top-3 w-[11%] z-20 drop-shadow-[0_4px_6px_rgba(0,0,0,.6)]" aria-hidden>
+            <defs><linearGradient id="ptr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFF7ED" /><stop offset=".5" stopColor="#F59E0B" /><stop offset="1" stopColor="#B91C1C" /></linearGradient></defs>
+            <path d="M20 52 L3 18 A18 18 0 1 1 37 18 Z" fill="url(#ptr)" stroke="#FFF7ED" strokeWidth="2" />
+            <circle cx="20" cy="18" r="6" fill="#2a0a4a" />
+          </svg>
         </div>
       </section>
 
       {/* spin controls */}
-      <div className="max-w-md mx-auto mt-6 bg-white/[0.07] backdrop-blur border border-white/12 rounded-3xl p-4 sm:p-5 shadow-2xl">
-        <label className="block text-xs font-black tracking-wider text-amber-200">📸 YOUR INSTAGRAM USERNAME <span className="text-white/40 font-semibold normal-case tracking-normal">(one spin per profile)</span></label>
-        <div className="mt-2 flex items-center bg-[#12002b] border border-white/15 rounded-2xl overflow-hidden focus-within:border-amber-300">
-          <span className="pl-3 text-white/50 font-bold">@</span>
-          <input value={handle} onChange={e => setHandle(e.target.value)} placeholder="your_instagram_id" className="w-full bg-transparent px-1.5 py-3 text-sm font-semibold placeholder:text-white/30" maxLength={31} />
-          {handle && <span className="pr-3 text-emerald-300 text-xs font-bold whitespace-nowrap">✓ 1× only</span>}
-        </div>
-        <p className="text-[11px] text-white/45 mt-1.5">We only use your public username to prevent repeat plays. <b className="text-white/70">Never enter your Instagram password here.</b> You can also play as guest.</p>
-        {error && <div className="mt-3 bg-red-500/15 border border-red-400/40 text-red-200 text-xs font-semibold rounded-xl px-3 py-2.5">⚠️ {error}</div>}
-        <button onClick={spin} disabled={spinning} className="mt-3 w-full bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 disabled:opacity-60 text-white font-black text-lg tracking-wide py-4 rounded-2xl shadow-[0_10px_30px_rgba(245,158,11,.4)] active:scale-[.99] transition">
+      <div className="max-w-md mx-auto mt-6">
+        {error && <div className="mb-3 bg-red-500/15 border border-red-400/40 text-red-200 text-xs font-semibold rounded-xl px-3 py-2.5">⚠️ {error}</div>}
+        <button onClick={spin} disabled={spinning} className="w-full bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 disabled:opacity-60 text-white font-black text-lg tracking-wide py-4 rounded-2xl shadow-[0_10px_30px_rgba(245,158,11,.4)] active:scale-[.99] transition">
           {spinning ? "🎡 SPINNING… GOOD LUCK! ✨" : "✨ SPIN NOW — IT'S FREE ✨"}
         </button>
-        <p className="text-center text-[11px] text-white/40 mt-2">🔒 Prize is decided securely on our server • No IP restriction • One spin per profile/browser</p>
+        <p className="text-center text-[11px] text-white/40 mt-2">🔒 Prize is decided securely on our server • Spin as many times as you like</p>
       </div>
 
       {/* prizes grid */}
       <h2 className="text-center font-black text-xl mt-10">🎁 <span className="text-amber-300">Prizes You Can Win</span></h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-3xl mx-auto mt-4">
-        {PRIZES.map(p => (<div key={p.id} className="bg-white/[0.06] border border-white/10 rounded-3xl p-4 text-center hover:border-amber-300/50 transition"><div className="text-4xl">{p.emoji}</div><div className="font-black mt-1.5 text-sm">{p.name}</div><div className="text-[11px] text-amber-200/90 font-bold">{p.value}</div><div className="text-[11px] text-white/50 mt-1">{p.desc}</div><span className="inline-block mt-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-400/15 text-emerald-300">PHYSICAL GIFT • HOME DELIVERY</span></div>))}
+        {PRIZES.map(p => (<div key={p.id} className="relative overflow-hidden rounded-3xl p-4 text-center border-2 border-amber-200/60 shadow-xl hover:-translate-y-1 transition" style={{ background: `linear-gradient(145deg, ${p.color}, ${p.color2})`, color: p.textColor }}><div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/25 blur-xl" aria-hidden /><div className="text-4xl drop-shadow">{p.emoji}</div><div className="font-black mt-1.5 text-sm">{p.name}</div><div className="inline-block mt-1.5 text-[11px] font-black px-2.5 py-0.5 rounded-full bg-[#1a0533]/60 text-amber-200 border border-amber-200/50">{p.value}</div><div className="text-[11px] mt-1.5 opacity-80">{p.desc}</div></div>))}
       </div>
 
       {/* how it works */}
       <div className="max-w-3xl mx-auto mt-10 grid sm:grid-cols-4 gap-3 text-center">
-        {[["1 🎡", "Spin the Wheel", "Enter your @username & spin once"], ["2 📦", "Add Address", "Won a gift? Tell us where to deliver + email"], ["3 👤", "Create Account", "Your own Diwali Spin & Win account"], ["4 💬", "Share & Confirm", "WhatsApp 2 friends → order confirmed!"]].map(([t, d, s]) => (<div key={t} className="bg-gradient-to-b from-white/[0.08] to-white/[0.03] border border-white/10 rounded-3xl p-4"><div className="font-black text-amber-300">{t}</div><div className="font-bold text-sm mt-1">{d}</div><div className="text-[11px] text-white/50 mt-1">{s}</div></div>))}
+        {[["1 🎡", "Spin the Wheel", "Spin as many times as you like"], ["2 📦", "Add Address", "Won a gift? Tell us where to deliver + email"], ["3 👤", "Create Account", "Your own Diwali Spin & Win account"], ["4 💬", "Share & Confirm", "WhatsApp 2 friends → order confirmed!"]].map(([t, d, s]) => (<div key={t} className="bg-gradient-to-b from-white/[0.08] to-white/[0.03] border border-white/10 rounded-3xl p-4"><div className="font-black text-amber-300">{t}</div><div className="font-bold text-sm mt-1">{d}</div><div className="text-[11px] text-white/50 mt-1">{s}</div></div>))}
       </div>
 
       <div className="max-w-3xl mx-auto mt-8 grid sm:grid-cols-2 gap-3">

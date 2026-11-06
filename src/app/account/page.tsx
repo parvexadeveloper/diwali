@@ -50,7 +50,7 @@ export default function AccountPage() {
         </div>
         <form onSubmit={submit} className="px-7 py-5 space-y-3">
           {mode === "register" && (<div>
-            <input className={inputCls} placeholder="Instagram username (@your_id) — one play per profile" value={handle} onChange={e => setHandle(e.target.value)} required maxLength={31} />
+            <input className={inputCls} placeholder="Instagram username (@your_id)" value={handle} onChange={e => setHandle(e.target.value)} required maxLength={31} />
             <p className="text-[11px] text-gray-400 mt-1">Only your public @username. We will <b>never</b> ask for your Instagram password.</p>
           </div>)}
           <input type="email" className={inputCls} placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} required />

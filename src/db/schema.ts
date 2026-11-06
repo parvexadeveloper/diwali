@@ -11,8 +11,8 @@ export const spinEntries = pgTable("spin_entries", {
   prizeType: text("prize_type").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 }, (t) => [
-  uniqueIndex("spin_session_unique").on(t.sessionId),
-  uniqueIndex("spin_instagram_unique").on(t.instagramHandle),
+  index("spin_session_idx").on(t.sessionId),
+  index("spin_instagram_idx").on(t.instagramHandle),
   index("spin_referred_idx").on(t.referredByUserId),
   index("spin_prize_idx").on(t.prizeId),
 ]);
@@ -31,7 +31,7 @@ export const users = pgTable("user_accounts", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (t) => [
   uniqueIndex("user_email_unique").on(t.email),
-  uniqueIndex("user_instagram_unique").on(t.instagramHandle),
+  index("user_instagram_idx").on(t.instagramHandle),
   uniqueIndex("user_referral_unique").on(t.referralCode),
 ]);
 
