@@ -227,7 +227,7 @@ const DICT: Record<Lang, Record<string, string>> = {
     "modal.congrats": "🎉 வாழ்த்துக்கள்! 🎉",
     "modal.youWon": "நீங்கள் வென்றது",
     "modal.next": "அடுத்து: உங்கள் டெலிவரி முகவரி + மின்னஞ்சலைச் சேர்த்து, கணக்கில் உள்நுழைந்து, பின் வாட்ஸ்அப்பில் 2 நண்பர்களுடன் பகிர்ந்து டெலிவரியை உறுதி செய்யுங்கள். 🚚",
-    "modal.claim": "📦 பெற்று முகவரி பதிவு செய் →",
+    "modal.claim": "📦 முகவரி பதிவு செய் →",
     "modal.viewWheel": "சக்கரத்தைப் பார்",
     "modal.entryId": "பதிவு ஐடி: {id}… • பாதுகாப்பான சர்வர் முடிவு • மாற்ற முடியாது",
 
@@ -364,7 +364,7 @@ type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (key: string, vars?: Rec
 const I18nContext = createContext<Ctx | null>(null);
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
+  const [lang, setLangState] = useState<Lang>("ta");
 
   useEffect(() => {
     try { const saved = localStorage.getItem("diwali_lang"); if (saved === "en" || saved === "ta") setLangState(saved); } catch {}

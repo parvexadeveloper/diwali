@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Header, Footer, Steps } from "@/components/Chrome";
 import { useI18n } from "@/lib/i18n";
 
 export default function AccountPage() {
@@ -36,8 +35,8 @@ export default function AccountPage() {
 
   const prizeName = entry?.prizeId ? t(`prize.${entry.prizeId}.name`) : entry?.prizeName || "";
   const inputCls = "w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-500";
-  return (<div className="min-h-screen bg-[#1a0533] bg-[radial-gradient(ellipse_at_top,#4c1d95,#1a0533_65%)]"><Header />
-    <main className="max-w-md mx-auto px-4 pb-10"><Steps current={3} />
+  return (<div className="min-h-screen bg-[#1a0533] bg-[radial-gradient(ellipse_at_top,#4c1d95,#1a0533_65%)] px-4 py-10">
+    <div className="w-full max-w-md mx-auto">
       {entry && entry.prizeType !== "none" && <div className="text-center bg-amber-400/15 border border-amber-300/40 rounded-2xl px-4 py-3 text-sm mb-4 animate-pop">{t("acct.winBanner", { prize: prizeName })}</div>}
       {/* Clean login card — Diwali Spin & Win's OWN account, NOT Instagram */}
       <div className="bg-white text-gray-900 rounded-[22px] shadow-2xl overflow-hidden animate-pop">
@@ -58,7 +57,7 @@ export default function AccountPage() {
         </form>
       </div>
       <p className="text-center text-xs text-white/40 mt-4"><Link href="/" className="underline">{t("acct.back")}</Link></p>
-    </main><Footer />
+    </div>
 
     {/* Welcome popup — about the Diwali Spin & Win account, NOT an Instagram login */}
     {showWelcome && (
