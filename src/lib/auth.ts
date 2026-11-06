@@ -41,3 +41,27 @@ export function rateLimit(key: string, limit = 20, windowMs = 60_000) {
   arr.push(now); hits.set(key, arr); return arr.length <= limit;
 }
 export function clientIp(req: Request) { return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"; }
+
+// ---- Admin panel auth (separate cookie from player sessions) ----
+// Credentials come from env with a dev fallback of es / es@2312.
+export const ADMIN_USERNAME = () => process.env.ADMIN_USERNAME || "es";
+export const ADMIN_PASSWORD = () => process.env.ADMIN_PASSWORD || "es@2312";
+export function checkAdminCreds(username: string, password: string) {
+  return username === ADMIN_USERNAME() && password === ADMIN_PASSWORD();
+}
+export function createAdminToken() {
+  const payload = Buffer.from(JSON.stringify({ adm: true, exp: Date.now() + 1000 * 60 * 60 * 8 })).toString("base64url");
+  return `${payload}.${sign(payload)}`;
+}
+export function verifyAdminToken(token?: string | null): boolean {
+  if (!token) return false;
+  const [payload, sig] = token.split(".");
+  if (!payload || !sig || sign(payload) !== sig) return false;
+  try { const d = JSON.parse(Buffer.from(payload, "base64url").toString()); return d.adm === true && d.exp > Date.now(); } catch { return false; }
+}
+export async function isAdmin(): Promise<boolean> { const c = await cookies(); return verifyAdminToken(c.get("diwali_admin")?.value); }
+export async function setAdminCookie() {
+  const c = await cookies();
+  c.set("diwali_admin", createAdminToken(), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 60 * 60 * 8 });
+}
+export async function clearAdminCookie() { const c = await cookies(); c.delete("diwali_admin"); }
