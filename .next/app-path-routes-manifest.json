@@ -3,7 +3,6 @@
   "/_not-found/page": "/_not-found",
   "/account/page": "/account",
   "/api/auth/login/route": "/api/auth/login",
-  "/api/auth/register/route": "/api/auth/register",
   "/api/health/route": "/api/health",
   "/api/me/route": "/api/me",
   "/api/share/route": "/api/share",

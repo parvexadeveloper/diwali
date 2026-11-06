@@ -21,7 +21,8 @@ export default function AccountPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setError(""); setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
+      const spinEntryId = (() => { try { return JSON.parse(localStorage.getItem("diwali_entry") || "null")?.id || ""; } catch { return ""; } })();
+      const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password, spinEntryId }) });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Something went wrong."); setLoading(false); return; }
       if (data.user?.instagramHandle) localStorage.setItem("diwali_handle", data.user.instagramHandle);

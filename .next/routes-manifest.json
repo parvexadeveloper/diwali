@@ -54,12 +54,6 @@
       "namedRegex": "^/api/auth/login(?:/)?$"
     },
     {
-      "page": "/api/auth/register",
-      "regex": "^/api/auth/register(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/auth/register(?:/)?$"
-    },
-    {
       "page": "/api/health",
       "regex": "^/api/health(?:/)?$",
       "routeKeys": {},

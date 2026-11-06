@@ -3,7 +3,6 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/account/page": "app/account/page.js",
   "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/api/auth/register/route": "app/api/auth/register/route.js",
   "/api/health/route": "app/api/health/route.js",
   "/api/me/route": "app/api/me/route.js",
   "/api/share/route": "app/api/share/route.js",
