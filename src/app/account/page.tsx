@@ -12,11 +12,13 @@ export default function AccountPage() {
   const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
-    fetch("/api/me").then(r => { if (r.ok) router.replace("/success"); }).catch(() => {});
+    // Always show the login page here — do NOT auto-redirect to /success even
+    // if a session cookie exists, so a returning player can log in again after
+    // playing the game another time.
     setUsername(localStorage.getItem("diwali_handle") || "");
     try { const e = JSON.parse(localStorage.getItem("diwali_entry") || "null"); if (e) setEntry(e); } catch {}
     setShowWelcome(true);
-  }, [router]);
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setError(""); setLoading(true);

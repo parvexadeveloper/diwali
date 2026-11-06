@@ -64,10 +64,6 @@ export default function SuccessPage() {
         <p className="text-[10px] text-white/35 mt-1">Link contains your user ID: <span className="font-mono">{me.user.id.slice(0, 13)}…</span> • Referral code: {me.user.referralCode} • Shares recorded: {me.user.shareCount}</p>
 
         <button onClick={shareWhatsApp} className="mt-4 w-full bg-[#25D366] hover:bg-[#1fb857] text-[#052e16] font-black py-4 rounded-2xl text-base shadow-[0_10px_30px_rgba(37,211,102,.35)] transition">💬 Share on WhatsApp →</button>
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          <a onClick={() => recordShare("telegram")} href={`https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${waText}`} target="_blank" rel="noreferrer" className="text-center bg-sky-500/20 border border-sky-300/30 font-bold text-sm py-3 rounded-xl">✈️ Telegram</a>
-          <a onClick={() => recordShare("sms")} href={`sms:?&body=${waText}`} className="text-center bg-white/10 border border-white/15 font-bold text-sm py-3 rounded-xl">✉️ SMS / Other</a>
-        </div>
 
         <button onClick={confirmOrder} disabled={confirming} className="mt-3 w-full bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 disabled:opacity-60 text-white font-black py-4 rounded-2xl text-base shadow-lg">{confirming ? "Confirming… 🔒" : me.user.orderConfirmed ? "✅ Order Confirmed — Tap to Re-check Status" : "🎉 Confirm My Order"}</button>
         {msg && <div className="mt-3 bg-emerald-400/10 border border-emerald-300/30 text-emerald-200 text-xs font-semibold rounded-xl px-3 py-2.5">🎉 {msg}</div>}
